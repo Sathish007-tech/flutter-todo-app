@@ -1,4 +1,4 @@
-import 'dart:convert'; // Used to convert our list to text for storage
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,45 +17,43 @@ class TodoScreen extends StatefulWidget {
 }
 
 class _TodoScreenState extends State<TodoScreen> {
-  // This list holds our tasks. Each task is a Map with 'title' and 'isDone'
+
   List<Map<String, dynamic>> _tasks = [];
 
   @override
   void initState() {
     super.initState();
-    _loadTasks(); // Load data when app starts
+    _loadTasks();
   }
 
-  // --- SAVE & LOAD LOGIC (SharedPreferences) ---
 
-  // Save the list to phone storage
+
+
   Future<void> _saveTasks() async {
     final prefs = await SharedPreferences.getInstance();
-    // We convert the List into a String (JSON) because prefs can only store strings
     final String encodedData = jsonEncode(_tasks);
     await prefs.setString('todo_list', encodedData);
   }
 
-  // Load the list from phone storage
+
   Future<void> _loadTasks() async {
     final prefs = await SharedPreferences.getInstance();
     final String? encodedData = prefs.getString('todo_list');
 
     if (encodedData != null) {
       setState(() {
-        // Convert the String back into a List
+
         _tasks = List<Map<String, dynamic>>.from(jsonDecode(encodedData));
       });
     }
   }
 
-  // --- TASK ACTIONS (Add, Edit, Delete) ---
 
   void _addTask(String title) {
     setState(() {
       _tasks.add({'title': title, 'isDone': false});
     });
-    _saveTasks(); // Save immediately after adding
+    _saveTasks();
   }
 
   void _editTask(int index, String newTitle) {
@@ -79,12 +77,12 @@ class _TodoScreenState extends State<TodoScreen> {
     _saveTasks();
   }
 
-  // --- UI DIALOG FOR ADDING/EDITING ---
+
 
   void _showTaskDialog({int? index}) {
     TextEditingController _controller = TextEditingController();
     if (index != null) {
-      _controller.text = _tasks[index]['title']; // Pre-fill if editing
+      _controller.text = _tasks[index]['title'];
     }
 
     showDialog(
@@ -119,7 +117,6 @@ class _TodoScreenState extends State<TodoScreen> {
     );
   }
 
-  // --- MAIN UI BUILD ---
 
   @override
   Widget build(BuildContext context) {
@@ -137,12 +134,12 @@ class _TodoScreenState extends State<TodoScreen> {
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: ListTile(
-              // Checkbox Logic
+
               leading: Checkbox(
                 value: _tasks[index]['isDone'],
                 onChanged: (_) => _toggleTask(index),
               ),
-              // Task Title (Strikethrough if done)
+
               title: Text(
                 _tasks[index]['title'],
                 style: TextStyle(
@@ -152,7 +149,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   color: _tasks[index]['isDone'] ? Colors.grey : Colors.black,
                 ),
               ),
-              // Edit and Delete Buttons
+
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
